@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>list</title>
+</head>
+<body>
+
+	<div id="list"></div>
+		<div id="fanye"><button id="kz_first">第一页</button><button id="kz_Previous">上一页</button><button id="kz_next">下一页</button><button id="kz_end">最后一页</button></div>
+
+		<div id="danqianye">1</div>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript">
+
+  	$(document).ready(function() {
+  		$.post('000.php',function(data, textStatus, xhr) {
+  			/*optional stuff to do after success */
+           
+  			var  shuju=JSON.parse(data);
+  			var  shuliang=shuju[2];  //每页的数据数量
+  			var  totle=shuju[0]["totle"];  //所有数据数量
+  		  totle_pages=parseInt(shuju[0]["totle"]/shuliang);  //合计有多少页  去掉var在其他函数里也能调用
+  			var  post_page=shuju[3]["post_page"];
+  			console.log(shuliang)
+  			console.log(totle_pages)
+  				console.log(post_page)
+  			var content="" ; 
+  		         for (var i = 0; i <20; i++) {
+  		          content = content +("id:"+shuju[1][i]["user_id"]+"|"+shuju[1][i]["user_email"]+"<br>");
+  		         }
+  		        $("#list").html(content)
+
+ 
+
+  		});
+   
+
+//第一页控制开始
+$("#kz_first").click(function(event) {
+
+$.post('000.php', {param1: 'value1'}, function(data, textStatus, xhr) {
+	  			var  shuju=JSON.parse(data);
+	  			var  post_page=shuju[3]["post_page"];
+	  			$("#danqianye").html(post_page);
+	  			var  content="" ; 
+  		         for (var i = 0; i <20; i++) {
+  		          content = content +("id:"+shuju[1][i]["user_id"]+"|"+shuju[1][i]["user_email"]+"<br>");
+  		         }
+  		        $("#list").html(content)
+	 
+});
+	 
+});
+
+
+//上一页开始
+$("#kz_Previous").click(function(event) {
+var post_page=$("#danqianye").html()-2;
+//如果是第一页,那么上一页就是在原地不动,用小于0去控制,为什么要减2,因为一开始就加了1,然后下一页又加了一个1,所以要减2
+if (post_page<0) {
+	  post_page=0
+}
+ 
+
+$.post('000.php', {panduan: 'reduce',
+                   post_page:post_page}, function(data, textStatus, xhr) {
+                  
+	  			var  shuju=JSON.parse(data);
+          var  post_page=parseInt(shuju[3]["post_page"])+1;
+          $("#danqianye").html(post_page);
+	  			var  content="" ; 
+  		         for (var i = 0; i <20; i++) {
+  		          content = content +("id:"+shuju[1][i]["user_id"]+"|"+shuju[1][i]["user_email"]+"<br>");
+  		         }
+  		        $("#list").html(content);
+	 
+});
+	 
+});
+
+
+//下一页开始
+$("#kz_next").click(function(event) {
+var post_page=parseInt($("#danqianye").html());
+if (post_page==totle_pages) {
+   			$.post('000.php', {panduan: 'increase',
+                   post_page:post_page}, function(data, textStatus, xhr) {                 
+	  			var  shuju=JSON.parse(data);
+	  			var  post_page=parseInt(shuju[3]["post_page"]);	  			 
+	  			$("#danqianye").html(post_page);
+	  			var  content="" ; 
+  		         for (var i = 0; i <20; i++) {
+  		          content = content +("id:"+shuju[1][i]["user_id"]+"|"+shuju[1][i]["user_email"]+"<br>");
+  		         }
+  		        $("#list").html(content);
+	 
+});
+}
+else {
+	$.post('000.php', {panduan: 'increase',
+                   post_page:post_page}, function(data, textStatus, xhr) {                 
+	  			var  shuju=JSON.parse(data);
+	  			var  post_page=parseInt(shuju[3]["post_page"])+1;	  			 
+	  			$("#danqianye").html(post_page);
+	  			var  content="" ; 
+  		         for (var i = 0; i <20; i++) {
+  		          content = content +("id:"+shuju[1][i]["user_id"]+"|"+shuju[1][i]["user_email"]+"<br>");
+  		         }
+  		        $("#list").html(content);
+	 
+});
+}
+	 
+});
+
+//最后一页
+$("#kz_end").click(function(event) {
+ 
+ var post_page=totle_pages;
+ $.post('000.php', {panduan: 'end',
+ 	                  post_page:post_page}, function(data, textStatus, xhr) { 	                 
+ 	        var  shuju=JSON.parse(data);	  		 
+	  			console.log(post_page) 			 
+	  			$("#danqianye").html(post_page);
+	  			var  content="" ; 
+  		         for (var i = 0; i <shuju[1].length; i++) {
+  		          content = content +("id:"+shuju[1][i]["user_id"]+"|"+shuju[1][i]["user_email"]+"<br>");
+  		         }
+  		        $("#list").html(content);
+ });
+});
+
+
+
+
+ 
+
+
+
+
+
+
+
+  	});
+
+
+ 
+
+ 
+
+  </script>
+
+ 
+</body>
+</html>
